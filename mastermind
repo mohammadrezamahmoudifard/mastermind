@@ -1,0 +1,132 @@
+using System;
+namespace mastermind
+{
+    class Program
+    {
+        static void Main(string[]args)
+        {
+            string? Replay;
+            do
+            {
+                Console.WriteLine("Choose the difficulty level: easy, medium, hard");
+                string? difficultyLevel = Console.ReadLine()?.ToLower();
+                Random random = new Random();
+
+                int minNumber, maxNumber, numberOfDigits;
+                switch (difficultyLevel)
+                {
+                    case "easy":
+                        minNumber = 0;
+                        maxNumber = 999;
+                        numberOfDigits = 3;
+                        break;
+                    case "medium":
+                        minNumber = 1000;
+                        maxNumber = 9999;
+                        numberOfDigits = 4;
+                        break;
+                    case "hard":
+                        minNumber = 10000;
+                        maxNumber = 99999;
+                        numberOfDigits = 5;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid difficulty level. Please choose from easy, medium, or hard.");
+                        return;
+                }
+
+
+                int randomNumber = random.Next(minNumber, maxNumber + 1);
+
+                Console.WriteLine($"Guess the {numberOfDigits}-digit number. You have 10 attempts.");
+
+                int attempts = 10;
+                do
+                {
+                    Console.Write("Enter your guess: ");
+                    string? input = Console.ReadLine();
+
+                    // Validate input
+                    int guess;
+                    if (!int.TryParse(input, out guess))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a valid number.");
+                        continue;
+                    }
+                    if (input.Length != numberOfDigits)
+                    {
+                        Console.WriteLine($"Invalid input length. Please enter a {numberOfDigits}-digit number.");
+                        continue;
+                    }
+
+                    // Check if guess is correct
+                    if (guess == randomNumber)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Congratulations! You guessed the correct number.");
+                        Console.ResetColor();
+                        break;
+                    }
+                    else
+                    {
+                        // Check for correct digits in correct position
+                        bool[] correctanswer = new bool[numberOfDigits];
+                        bool[] correctDigits = new bool[numberOfDigits];
+                        int Check = randomNumber;
+
+                        for (int i = 0; i < numberOfDigits; i++)
+                        {
+                            int digit = int.Parse(input[i].ToString());
+                            if (randomNumber.ToString().Contains(digit.ToString()))
+                            {
+                                if (digit == int.Parse(randomNumber.ToString()[i].ToString()))
+                                { correctanswer[i] = true; }
+                                else
+                                {
+                                    correctDigits[i] = true;
+                                }
+                            }
+                        }
+                        // Display feedback
+                        for (int i = 0; i < numberOfDigits; i++)
+                        {
+                            if (correctanswer[i])
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write(input[i]);
+                            }
+                            else
+                            {
+                                if (correctDigits[i])
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.Write(input[i]);
+                                }
+
+                                else
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.Write(input[i]);
+                                }
+                            }
+                        }
+                        Console.WriteLine();
+                        Console.ResetColor();
+
+                        attempts--;
+                        Console.WriteLine($"You have {attempts} attempts left.");
+                    }
+                } while (attempts > 0);
+
+                if (attempts == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Sorry, you ran out of attempts. The correct number was: {randomNumber}");
+                    Console.ResetColor();
+                }
+                Console.WriteLine("do you want to play again?(yes/no)");
+                Replay =Console.ReadLine();
+            } while (Replay == "yes");
+        }
+    }
+}
